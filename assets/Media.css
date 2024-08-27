@@ -1,0 +1,43 @@
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    width: 90%;
+  }
+
+  #root {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  .header {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header .logo {
+    font-size: 30px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .cart-item p {
+    font-size: 10px;
+  }
+
+  .cart-item h2 {
+    font-size: 13px;
+  }
+
+  button {
+    padding: 7px 15px;
+  }
+}
