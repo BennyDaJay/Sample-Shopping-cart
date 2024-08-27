@@ -1,4 +1,3 @@
-// Product data
 const product = [
     {
         id: 0,
@@ -30,12 +29,11 @@ const product = [
     }
 ];
 
-// Cart to hold products
-const cart = [];
+const mycategories = [...new Set(product.map((item) => { return item }))];
 
-// Display products
-document.getElementById('root').innerHTML = product.map((item, index) => {
-    const { image, name, price } = item;
+let i = 0;
+document.getElementById('root').innerHTML = mycategories.map((item) => {
+    var { image, name, price } = item;
     return (
         `<div class='box'> 
             <div class='img-box'>
@@ -44,104 +42,58 @@ document.getElementById('root').innerHTML = product.map((item, index) => {
             <div class='bottom'>
                 <p>${name}</p>
                 <h2>$ ${price}.00</h2>` +
-        `<button onclick='addProductToCart(${item.id})'>Add to Cart</button>` +
+        `<button onclick='addtocart(${i++})'>Add to Cart</button>` +
         `</div>
         </div>`
     );
 }).join('');
 
-// Add product to cart or increase quantity if already in cart
-function addProductToCart(productId) {
-    const productInCart = cart.find(item => item.id === productId);
-    if (productInCart) {
-        increaseQuantity(productId);
+var cart = [];
+
+function addtocart(a) {
+    const itemInCart = cart.find(item => item.id === mycategories[a].id);
+    if (itemInCart) {
+        itemInCart.quantity += 1;
     } else {
-        const productToAdd = product.find(item => item.id === productId);
-        if (productToAdd) {
-            cart.push({ ...productToAdd });
-        }
+        cart.push({ ...mycategories[a], quantity: 1 });
     }
-    displayCart();
+    displaymycart();
 }
 
-// Increase quantity of a product in the cart
-function increaseQuantity(productId) {
-    const product = cart.find(item => item.id === productId);
-    if (product) {
-        product.quantity++;
-    }
-    displayCart();
-}
-
-function decreaseQuantity(productId) {
-    const product = cart.find(item => item.id === productId);
-    if (product) {
-        if (product.quantity > 1) {
-            product.quantity--;
-        } else {
-            removeProductFromCart(productId);
-        }
-    }
-    displayCart();
-}
-
-function removeProductFromCart(productId) {
-    const index = cart.findIndex(item => item.id === productId);
-    if (index > -1) {
-        cart.splice(index, 1);
-    }
-    displayCart();
-}
-
-
-function cartTotal() {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-}
-
-// Handle payment
-function pay(amount) {
-    const total = cartTotal();
-    const balance = amount - total;
-    return balance;
-}
-
-// Display cart contents
-function displayCart() {
-    let cartItemsHtml = '';
-    let total = 0;
+function displaymycart() {
+    let j = 0, total = 0;
     document.getElementById('count').innerHTML = cart.length;
-
-    if (cart.length === 0) {
+    
+    if (cart.length == 0) {
         document.getElementById('cartItem').innerHTML = 'Your cart is empty';
-        document.getElementById('total').innerHTML = '$0.00';
+        document.getElementById('total').innerHTML = '$ 0.00';
+        document.getElementById('clear-cart').style.display = 'none'; // Hide Clear Cart button
     } else {
-        cart.forEach((item) => {
-            const { image, name, price, quantity } = item;
-            cartItemsHtml += `
-                <div class='cart-item'>
-                    <div class='myrow-img'>
-                        <img class='rowww' src=${image}>
+        document.getElementById('clear-cart').style.display = 'block'; // Show Clear Cart button
+        
+        document.getElementById('cartItem').innerHTML = cart.map((items) => {
+            var { image, name, price, quantity } = items;
+            total += price * quantity;
+            document.getElementById('total').innerHTML = "$ " + total + ".00";
+            return (
+                `<div class='cart-item'>
+                    <div class='row-img'>
+                        <img class='rowing' src=${image}>
                     </div>
-                    <p style='font-size:12px;'>${name} (${quantity})</p>
-                    <h2 style='font-size:15px;'>$${price}.00</h2>
-                    <button class='quantity-button increase' onclick='increaseQuantity(${item.id})'>+</button>
-                    <button class='quantity-button decrease' onclick='decreaseQuantity(${item.id})'>-</button>
-                    <i class='fa-solid fa-trash' onclick='removeProductFromCart(${item.id})'></i>
-                </div>`;
-            total += item.price * item.quantity;
-        });
-
-        document.getElementById('cartItem').innerHTML = cartItemsHtml;
-        document.getElementById('total').innerHTML = `$${total}.00`;
-        document.getElementById('clear-cart').style.display = 'block';
+                    <p style='font-size:12px;'>${name} (x${quantity})</p>
+                    <h2 style='font-size:15px;'>$ ${price * quantity}.00</h2>` +
+                `<i class='fa-solid fa-trash' onclick='delElement(${j++})'></i></div>`
+            );
+        }).join('');
     }
 }
 
-// To Clear the cart
-function clearCart() {
-    cart.length = 0;
-    displayCart();
+function delElement(index) {
+    cart.splice(index, 1);
+    displaymycart();
 }
 
-document.getElementById('clear-cart').addEventListener('click', clearCart);
-document.getElementById('clear-cart').style.display = 'none';
+function clearCart() {
+    cart = [];
+    displaymycart();
+}
